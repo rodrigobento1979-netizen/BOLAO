@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Mail, Phone, ShieldCheck, CheckCircle2, KeyRound } from 'lucide-react';
+import { X, User, Mail, Phone, CheckCircle2, Shield } from 'lucide-react';
 import { RegisteredUser } from '../types/lottery';
 import { sounds } from '../services/soundEffects';
 
@@ -16,13 +16,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   onLoginSuccess,
   currentUser,
-  defaultRole = 'participant',
+  defaultRole = 'admin',
 }) => {
   const [role, setRole] = useState<'participant' | 'admin'>(defaultRole);
   const [name, setName] = useState(currentUser?.name || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [phone, setPhone] = useState(currentUser?.phone || '');
-  const [adminPin, setAdminPin] = useState('');
   const [error, setError] = useState('');
 
   if (!isOpen) return null;
@@ -31,23 +30,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     e.preventDefault();
     setError('');
 
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      setError('Por favor preencha nome, e-mail e telefone/WhatsApp.');
-      return;
-    }
-
-    if (role === 'admin' && adminPin.trim().toLowerCase() !== 'master') {
-      setError('Senha de Administrador inválida. A senha de acesso é "master".');
+    if (!name.trim()) {
+      setError('Por favor preencha seu nome para identificação.');
       return;
     }
 
     sounds.playBallTap(650);
 
     const user: RegisteredUser = {
-      id: `user-${Date.now()}`,
+      id: currentUser?.id || `user-${Date.now()}`,
       name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
+      email: email.trim().toLowerCase() || 'participante@bolao.com.br',
+      phone: phone.trim() || '(11) 99999-9999',
       role,
       registeredAt: new Date().toISOString(),
     };
@@ -66,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div>
               <h3 className="font-bold text-base">Identificação do Usuário</h3>
               <p className="text-xs text-blue-100">
-                Loterias Caixa · Sistema de Bolões Oficiais
+                Acesso 100% público · Sem necessidade de senhas
               </p>
             </div>
           </div>
@@ -85,6 +79,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={() => {
+                setRole('admin');
+                setError('');
+              }}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1 ${
+                role === 'admin'
+                  ? 'bg-white text-[#005CA9] shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Shield className="w-3.5 h-3.5 text-[#005CA9]" />
+              <span>Organizador / Criador</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
                 setRole('participant');
                 setError('');
               }}
@@ -94,21 +103,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Participante / Apostador
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setRole('admin');
-                setError('');
-              }}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${
-                role === 'admin'
-                  ? 'bg-[#005CA9] text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Organizador / Admin
+              Cotista / Apostador
             </button>
           </div>
 
@@ -120,7 +115,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Nome Completo *
+              Seu Nome Completo *
             </label>
             <div className="relative">
               <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
@@ -133,17 +128,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className="w-full pl-9 pr-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-[#005CA9] focus:bg-white"
               />
             </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Único campo obrigatório. Aparecerá nas cotas e nos bilhetes.
+            </p>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              E-mail para Receber Avisos de Bolão e Boleto *
+              E-mail (Opcional)
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
               <input
                 type="email"
-                required
                 placeholder="Ex: seuemail@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -154,13 +151,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Telefone / WhatsApp (Para Notificações de Sorteio) *
+              Telefone / WhatsApp (Opcional)
             </label>
             <div className="relative">
               <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
               <input
                 type="tel"
-                required
                 placeholder="(11) 98765-4321"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -169,41 +165,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          {role === 'admin' && (
-            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 space-y-1.5 animate-fade-in">
-              <label className="block text-xs font-semibold text-[#005CA9] mb-1">
-                Senha Master do Administrador *
-              </label>
-              <div className="relative">
-                <KeyRound className="w-4 h-4 text-blue-400 absolute left-3 top-2.5 pointer-events-none" />
-                <input
-                  type="password"
-                  placeholder="Digite: master"
-                  value={adminPin}
-                  onChange={(e) => setAdminPin(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2 bg-white border border-blue-300 rounded-lg text-sm font-mono text-slate-900 focus:outline-none focus:border-[#005CA9]"
-                />
-              </div>
-              <span className="text-[11px] text-slate-500">
-                A senha padrão de controle é master.
-              </span>
-            </div>
-          )}
-
           <div className="pt-2 flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
               className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800"
             >
-              Cancelar
+              Fechar
             </button>
             <button
               type="submit"
               className="px-5 py-2 bg-[#005CA9] hover:bg-[#004889] text-white rounded-lg text-xs font-bold transition-colors shadow-md shadow-blue-900/20 flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{role === 'admin' ? 'Entrar como Admin' : 'Cadastrar e Continuar'}</span>
+              <span>Salvar e Continuar</span>
             </button>
           </div>
         </form>

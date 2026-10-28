@@ -471,12 +471,7 @@ export default function App() {
         onSelectTab={setActiveTab}
         onOpenPriceTable={() => setIsPriceTableOpen(true)}
         onCreateNewPool={() => {
-          if (!currentUser || currentUser.role !== 'admin') {
-            setAuthDefaultRole('admin');
-            setIsAuthModalOpen(true);
-          } else {
-            setIsNewPoolModalOpen(true);
-          }
+          setIsNewPoolModalOpen(true);
         }}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenNotifications={() => {
@@ -701,7 +696,7 @@ export default function App() {
         onSaveConfig={handleSavePixConfig}
       />
 
-      {/* User Login & Registration Modal (Admin Password: master) */}
+      {/* User Identification Modal (Acesso Público) */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -765,7 +760,7 @@ export default function App() {
           </div>
 
           <div className="text-slate-500 font-medium">
-            Painel Oficial do Bolão · Senha master ativada
+            Painel Oficial do Bolão · Acesso Público e Livre (Sem senhas)
           </div>
         </div>
       </footer>

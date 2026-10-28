@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trophy, Plus, ShieldAlert, Sparkles, Check, Calculator, Info } from 'lucide-react';
+import { X, Trophy, Plus, Sparkles, Check, Calculator, Info } from 'lucide-react';
 import { BolaoPool, LotteryType, RegisteredUser } from '../types/lottery';
 import { LOTTERIES_CONFIG } from '../data/lotteriesData';
 import { sounds } from '../services/soundEffects';
@@ -23,6 +23,8 @@ export const NewPoolModal: React.FC<NewPoolModalProps> = ({
   onCreatePool,
 }) => {
   const [selectedLottery, setSelectedLottery] = useState<LotteryType>(defaultLottery);
+  const [organizerName, setOrganizerName] = useState(currentUser?.name || '');
+  const [organizerPhone, setOrganizerPhone] = useState(currentUser?.phone || '');
   const [title, setTitle] = useState('');
   const [quotaPrice, setQuotaPrice] = useState(30);
   const [totalQuotas, setTotalQuotas] = useState(15);
@@ -58,9 +60,9 @@ export const NewPoolModal: React.FC<NewPoolModalProps> = ({
 
     sounds.playBallTap(600);
 
-    const adminName = currentUser ? currentUser.name : 'Rodrigo Bento (Organizador)';
-    const adminEmail = currentUser ? currentUser.email : 'admin@loteriascaixa.gov.br';
-    const adminPhone = currentUser ? currentUser.phone : '(11) 98765-4321';
+    const adminName = organizerName.trim() || (currentUser ? currentUser.name : 'Organizador do Bolão');
+    const adminEmail = currentUser?.email || 'contato@bolao.com.br';
+    const adminPhone = organizerPhone.trim() || (currentUser ? currentUser.phone : '');
 
     // Generate initial admin quota boleto
     const adminBoleto = generateCaixaBoleto(quotaPrice, adminName, title.trim());
@@ -100,8 +102,6 @@ export const NewPoolModal: React.FC<NewPoolModalProps> = ({
     onClose();
   };
 
-  const isAdmin = currentUser?.role === 'admin';
-
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in text-slate-800">
       <div className="bg-white border border-slate-200/80 rounded-t-3xl sm:rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
@@ -120,26 +120,9 @@ export const NewPoolModal: React.FC<NewPoolModalProps> = ({
             </button>
           </div>
           <p className="text-xs text-blue-100 mt-1 relative z-10">
-            Defina as cotas, valor e escolha a estratégia matemática recomendada por especialistas
+            Acesso público e livre · Qualquer pessoa pode criar seu bolão com cotas e valor
           </p>
         </div>
-
-        {/* Warning if not admin */}
-        {!isAdmin && (
-          <div className="p-3 bg-amber-50 border-b border-amber-200 flex items-center justify-between text-xs text-amber-900 shrink-0">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0" />
-              <span>Criação restrita aos administradores (senha: master).</span>
-            </div>
-            <button
-              type="button"
-              onClick={onOpenAuthModal}
-              className="font-bold underline text-amber-950 shrink-0"
-            >
-              Entrar como Admin
-            </button>
-          </div>
-        )}
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
@@ -177,19 +160,35 @@ export const NewPoolModal: React.FC<NewPoolModalProps> = ({
             </div>
           </div>
 
-          {/* Title */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Nome do Bolão *
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Ex: Bolão dos 15 Amigos - Mega Acumulada"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full h-11 px-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-[#005CA9] focus:bg-white"
-            />
+          {/* Title and Organizer */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Nome do Bolão *
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Ex: Bolão dos Amigos - Mega Acumulada"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full h-11 px-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-[#005CA9] focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Seu Nome (Organizador) *
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Ex: Rodrigo Bento"
+                value={organizerName}
+                onChange={(e) => setOrganizerName(e.target.value)}
+                className="w-full h-11 px-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-[#005CA9] focus:bg-white"
+              />
+            </div>
           </div>
 
           {/* Quotas & Price Simulator Live Calculation - Tipo Botão */}

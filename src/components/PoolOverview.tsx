@@ -110,13 +110,15 @@ export const PoolOverview: React.FC<PoolOverviewProps> = ({
     setIsEditing(false);
   };
 
+  const publicAppUrl = 'https://ais-pre-4qmjmjh6rx2iv43vgsz7vb-39259881863.us-west1.run.app';
+
   const handleShareWhatsApp = () => {
     sounds.playBallTap(550);
     const text = encodeURIComponent(
       `🍀 *CONVITE: ${pool.title.toUpperCase()}*\n` +
       `🏆 Loteria: ${config.fullName} (Concurso #${pool.targetContestNumber})\n` +
       `💰 Cota: R$ ${pool.quotaPrice.toFixed(2)} | Vagas: ${totalQuotasTaken}/${maxQuotas} preenchidas\n` +
-      `🎯 Entre agora, escolha suas dezenas da sorte e pague com Pix no aplicativo!\n` +
+      `🎯 Acesse o link público (sem login) e escolha seus números:\n${publicAppUrl}\n` +
       `Bora faturar juntos esse prêmio!`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
@@ -124,7 +126,7 @@ export const PoolOverview: React.FC<PoolOverviewProps> = ({
 
   const handleCopyLink = () => {
     sounds.playBallTap(500);
-    const text = `Bolão ${pool.title} (${config.fullName}) - Cota R$ ${pool.quotaPrice.toFixed(2)}. Entre e escolha seus números!`;
+    const text = `Bolão ${pool.title} (${config.fullName}) - Cota R$ ${pool.quotaPrice.toFixed(2)}. Acesse sem login: ${publicAppUrl}`;
     navigator.clipboard.writeText(text);
     setCopiedShare(true);
     setTimeout(() => setCopiedShare(false), 2500);
