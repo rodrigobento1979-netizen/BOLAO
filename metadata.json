@@ -1,0 +1,6 @@
+{
+  "name": "Bolão Inteligente Caixa - Mega-Sena, Lotofácil & Quina",
+  "description": "Sistema de gestão e otimizador matemático de bolões para Mega-Sena, Lotofácil e Quina com simulador de cotas para grupos, geração de chave e QR Code Pix, combinações inteligentes e persistência Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

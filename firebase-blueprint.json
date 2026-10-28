@@ -1,0 +1,46 @@
+{
+  "$schema": "https://firebase.google.com/schemas/blueprint/v1",
+  "entities": {
+    "pools": {
+      "title": "Bolões",
+      "description": "Registros dos bolões abertos e encerrados",
+      "fields": {
+        "title": { "type": "string" },
+        "lotteryType": { "type": "string" },
+        "targetContestNumber": { "type": "number" },
+        "targetContestDate": { "type": "string" },
+        "quotaPrice": { "type": "number" },
+        "totalQuotas": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdByAdminName": { "type": "string" }
+      }
+    },
+    "participants": {
+      "title": "Participantes e Cotistas",
+      "description": "Participantes associados a cada bolão",
+      "fields": {
+        "poolId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "quotas": { "type": "number" },
+        "paid": { "type": "boolean" },
+        "chosenNumbers": { "type": "array" },
+        "joinedAt": { "type": "string" }
+      }
+    },
+    "settings": {
+      "title": "Configurações Globais",
+      "description": "Configurações do organizador como chave Pix e dados do beneficiário",
+      "fields": {
+        "pixKeyType": { "type": "string" },
+        "pixKey": { "type": "string" },
+        "merchantName": { "type": "string" },
+        "merchantCity": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  }
+}
